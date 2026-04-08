@@ -59,7 +59,7 @@ def read_file(root_dir: Path, relative_path: str) -> str:
 
 def format_markdown(content: str) -> str:
     """Format markdown content using mdformat."""
-    return mdformat.text(content)
+    return mdformat.text(content, options={"number": True})
 
 
 def write_file(root_dir: Path, relative_path: str, content: str) -> str:
