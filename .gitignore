@@ -16,3 +16,4 @@ node_modules/
 .omc/
 .openchrome/
 .ruff_cache/
+docs/

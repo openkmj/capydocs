@@ -58,7 +58,8 @@ No database — all tests use the filesystem via `tmp_path`.
 
 - **CI** (`.github/workflows/ci.yml`): Runs lint + test on PR/push to main. Tests against Python 3.10, 3.12, 3.13.
 - **Release** (`.github/workflows/release.yml`): Uses [Release Please](https://github.com/googleapis/release-please) on main. Merging a release PR auto-updates `CHANGELOG.md`, bumps version in `pyproject.toml`, creates a GitHub Release, and publishes to PyPI.
-- **Commit convention**: [Conventional Commits](https://www.conventionalcommits.org/) — `feat:` (minor), `fix:` (patch), `feat!:` (major).
+- **Commit convention**: [Conventional Commits](https://www.conventionalcommits.org/) — `feat:` (minor), `fix:` (patch), `feat!:` (major), `docs:`/`chore:` (no bump).
+- **Release workflow**: Push to main → CI runs → Release Please creates a Release PR → Merge the PR to publish (CHANGELOG update + version bump + GitHub Release + PyPI deploy).
 
 ## Environment
 
