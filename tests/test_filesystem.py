@@ -44,7 +44,13 @@ def test_read_file_not_found(tmp_docs: Path) -> None:
 
 def test_write_file(tmp_docs: Path) -> None:
     write_file(tmp_docs, "hello.md", "# Updated")
-    assert (tmp_docs / "hello.md").read_text() == "# Updated"
+    assert (tmp_docs / "hello.md").read_text() == "# Updated\n"
+
+
+def test_write_file_formats_markdown(tmp_docs: Path) -> None:
+    write_file(tmp_docs, "hello.md", "# Title\nno blank line after heading")
+    content = (tmp_docs / "hello.md").read_text()
+    assert content.startswith("# Title\n\n")
 
 
 def test_create_file(tmp_docs: Path) -> None:

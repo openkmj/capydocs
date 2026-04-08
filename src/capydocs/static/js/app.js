@@ -3,7 +3,7 @@
  */
 
 import { renderTree, setActiveFile, enableRootDrop } from './tree.js';
-import { loadCodeMirror, createEditor, getContent, wrapSelection, insertAtCursor } from './editor.js';
+import { loadCodeMirror, createEditor, getContent, setContent, wrapSelection, insertAtCursor } from './editor.js';
 import { setupAI } from './ai.js';
 
 const API = '/api';
@@ -61,10 +61,13 @@ async function saveFile() {
     if (!currentFile) return;
     try {
         updateStatus('saving...', 'pending');
-        await api(`/files/${currentFile}`, {
+        const result = await api(`/files/${currentFile}`, {
             method: 'PUT',
             body: JSON.stringify({ content: getContent() }),
         });
+        if (result.content && result.content !== getContent()) {
+            setContent(result.content);
+        }
         isDirty = false;
         updateStatus('✓ Saved', 'success');
         showToast('File saved successfully');

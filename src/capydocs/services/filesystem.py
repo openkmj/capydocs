@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Any
 
+import mdformat
 from fastapi import HTTPException
 
 
@@ -56,12 +57,19 @@ def read_file(root_dir: Path, relative_path: str) -> str:
     return file_path.read_text(encoding="utf-8")
 
 
-def write_file(root_dir: Path, relative_path: str, content: str) -> None:
-    """Write content to a markdown file."""
+def format_markdown(content: str) -> str:
+    """Format markdown content using mdformat."""
+    return mdformat.text(content)
+
+
+def write_file(root_dir: Path, relative_path: str, content: str) -> str:
+    """Write content to a markdown file. Returns formatted content."""
     file_path = _validate_path(root_dir, relative_path)
     if not file_path.is_file():
         raise HTTPException(status_code=404, detail=f"File not found: {relative_path}")
-    file_path.write_text(content, encoding="utf-8")
+    formatted = format_markdown(content)
+    file_path.write_text(formatted, encoding="utf-8")
+    return formatted
 
 
 def create_file(root_dir: Path, relative_path: str, content: str = "") -> None:

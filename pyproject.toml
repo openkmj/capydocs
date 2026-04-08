@@ -26,6 +26,7 @@ dependencies = [
     "click>=8.0.0",
     "python-dotenv>=1.0.0",
     "fastmcp>=2.0.0",
+    "mdformat>=0.7.0",
 ]
 
 [project.optional-dependencies]
