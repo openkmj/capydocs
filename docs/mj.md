@@ -1,0 +1,1 @@
+Hi! I'm Minjae. I was born on December 25, 1999, and I'm a male software engineer based in Korea.

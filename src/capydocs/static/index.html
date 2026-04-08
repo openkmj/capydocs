@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>capydocs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- CodeMirror 6 via CDN -->
+    <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">capydocs</h1>
+                <button id="btn-new" class="btn btn-sm" title="New file">+ New</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search files..." />
+            </div>
+            <div id="file-tree" class="file-tree"></div>
+        </aside>
+        <main class="main">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <span id="current-file" class="current-file">No file selected</span>
+                    <span id="save-status" class="save-status"></span>
+                </div>
+                <div class="toolbar-right">
+                    <button id="btn-bold" class="btn btn-sm toolbar-btn" title="Bold (Ctrl+B)"><b>B</b></button>
+                    <button id="btn-italic" class="btn btn-sm toolbar-btn" title="Italic (Ctrl+I)"><i>I</i></button>
+                    <button id="btn-heading" class="btn btn-sm toolbar-btn" title="Heading">H</button>
+                    <button id="btn-link" class="btn btn-sm toolbar-btn" title="Link">🔗</button>
+                    <button id="btn-list" class="btn btn-sm toolbar-btn" title="List">☰</button>
+                    <span class="toolbar-separator"></span>
+                    <button id="btn-save" class="btn btn-primary btn-sm" title="Save (Ctrl+S)">Save</button>
+                    <button id="btn-rename" class="btn btn-sm" title="Rename/Move file">Rename</button>
+                    <button id="btn-delete" class="btn btn-danger btn-sm" title="Delete file">Delete</button>
+                </div>
+            </div>
+            <div id="editor-container" class="editor-container">
+                <div id="editor-placeholder" class="editor-placeholder">
+                    Select a file from the sidebar to start editing
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
