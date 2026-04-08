@@ -25,15 +25,22 @@ function buildNodes(parent, items) {
             const dirItem = document.createElement('div');
             dirItem.className = 'tree-item tree-dir';
             dirItem.dataset.path = item.path;
-            dirItem.innerHTML = `<span class="icon">📂</span><span class="name">${esc(item.name)}</span>`;
+            dirItem.innerHTML = `<span class="icon">📂</span><span class="name">${esc(item.name)}</span><span class="dir-actions"><span class="dir-btn dir-btn-delete" title="Delete folder">✕</span></span>`;
 
             const children = document.createElement('div');
             children.className = 'tree-children';
             buildNodes(children, item.children || []);
 
-            dirItem.addEventListener('click', () => {
+            dirItem.addEventListener('click', (e) => {
+                if (e.target.closest('.dir-btn')) return;
                 children.classList.toggle('collapsed');
                 dirItem.querySelector('.icon').textContent = children.classList.contains('collapsed') ? '📁' : '📂';
+            });
+
+            // Delete button on folder
+            dirItem.querySelector('.dir-btn-delete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (_onDirAction) _onDirAction('delete-folder', item.path);
             });
 
             // Context menu for directories

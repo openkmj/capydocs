@@ -7,6 +7,8 @@ A lightweight, pip-installable web-based markdown document manager. Point it at 
 - **File tree** — Browse `.md` files in a collapsible sidebar tree view
 - **CodeMirror 6 editor** — Syntax-highlighted markdown editing with formatting toolbar (bold, italic, heading, link, list)
 - **Full CRUD + Move** — Create, read, update, delete, and rename/move markdown files
+- **Folder management** — Create and delete folders from the sidebar (+ Folder button, hover ✕ to delete, right-click context menu)
+- **Drag and drop** — Move files between folders by dragging in the sidebar tree
 - **Server-side search** — Search by filename and content with context snippets
 - **AI text refinement** — Select text and refine it with OpenAI gpt-5-mini (concise, fix grammar, translate, change tone, or custom instructions)
 - **MCP server** — Expose document management as MCP tools for AI agents
@@ -115,7 +117,7 @@ capydocs/
 │           ├── editor.js       # CodeMirror 6 wrapper
 │           ├── ai.js           # AI refinement dialog UI
 │           └── cm-bundle.js    # Pre-built CodeMirror bundle
-└── tests/                      # 32 tests (pytest)
+└── tests/                      # 42 tests (pytest)
     ├── conftest.py
     ├── test_filesystem.py
     ├── test_files_api.py
@@ -144,6 +146,8 @@ capydocs/
 | POST | `/api/files/{path}` | Create file |
 | PATCH | `/api/files/{path}` | Move/rename file |
 | DELETE | `/api/files/{path}` | Delete file |
+| POST | `/api/dirs/{path}` | Create directory |
+| DELETE | `/api/dirs/{path}` | Delete directory |
 | GET | `/api/search?q=` | Search files |
 | POST | `/api/ai/refine` | AI text refinement |
 | GET | `/api/ai/presets` | List AI presets |

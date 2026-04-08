@@ -107,10 +107,10 @@ def delete_directory(root_dir: Path, relative_path: str) -> None:
         raise HTTPException(status_code=403, detail="Cannot delete root directory")
     try:
         dir_path.rmdir()
-    except OSError:
+    except OSError as e:
         raise HTTPException(
             status_code=409, detail="Directory is not empty"
-        )
+        ) from e
 
 
 def delete_file(root_dir: Path, relative_path: str) -> None:
