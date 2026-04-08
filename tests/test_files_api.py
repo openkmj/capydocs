@@ -47,6 +47,22 @@ def test_rename_file_not_found(client) -> None:
     assert resp.status_code == 404
 
 
+def test_create_directory(client) -> None:
+    resp = client.post("/api/dirs/newdir")
+    assert resp.status_code == 201
+
+
+def test_delete_directory(client) -> None:
+    client.post("/api/dirs/todelete")
+    resp = client.delete("/api/dirs/todelete")
+    assert resp.status_code == 200
+
+
+def test_delete_directory_not_empty(client) -> None:
+    resp = client.delete("/api/dirs/subdir")
+    assert resp.status_code == 409
+
+
 def test_path_traversal_blocked(client) -> None:
     resp = client.get("/api/files/../../etc/passwd")
     assert resp.status_code in (403, 400, 404)

@@ -31,13 +31,12 @@ def get_tree(root_dir: Path) -> list[dict[str, Any]]:
                 continue
             if item.is_dir():
                 children = _build_tree(item)
-                if children:
-                    entries.append({
-                        "name": item.name,
-                        "path": str(item.relative_to(root_dir)),
-                        "type": "directory",
-                        "children": children,
-                    })
+                entries.append({
+                    "name": item.name,
+                    "path": str(item.relative_to(root_dir)),
+                    "type": "directory",
+                    "children": children,
+                })
             elif item.suffix.lower() == ".md":
                 entries.append({
                     "name": item.name,
@@ -89,6 +88,29 @@ def move_file(root_dir: Path, src_path: str, dest_path: str) -> str:
     dest.parent.mkdir(parents=True, exist_ok=True)
     src.rename(dest)
     return str(dest.relative_to(root_dir))
+
+
+def create_directory(root_dir: Path, relative_path: str) -> None:
+    """Create a new directory."""
+    dir_path = _validate_path(root_dir, relative_path)
+    if dir_path.exists():
+        raise HTTPException(status_code=409, detail=f"Already exists: {relative_path}")
+    dir_path.mkdir(parents=True)
+
+
+def delete_directory(root_dir: Path, relative_path: str) -> None:
+    """Delete an empty directory."""
+    dir_path = _validate_path(root_dir, relative_path)
+    if not dir_path.is_dir():
+        raise HTTPException(status_code=404, detail=f"Directory not found: {relative_path}")
+    if dir_path == root_dir.resolve():
+        raise HTTPException(status_code=403, detail="Cannot delete root directory")
+    try:
+        dir_path.rmdir()
+    except OSError:
+        raise HTTPException(
+            status_code=409, detail="Directory is not empty"
+        )
 
 
 def delete_file(root_dir: Path, relative_path: str) -> None:

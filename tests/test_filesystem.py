@@ -6,7 +6,9 @@ import pytest
 from fastapi import HTTPException
 
 from capydocs.services.filesystem import (
+    create_directory,
     create_file,
+    delete_directory,
     delete_file,
     get_tree,
     move_file,
@@ -95,6 +97,47 @@ def test_move_file_conflict(tmp_docs: Path) -> None:
     with pytest.raises(HTTPException) as exc_info:
         move_file(tmp_docs, "hello.md", "other.md")
     assert exc_info.value.status_code == 409
+
+
+def test_create_directory(tmp_docs: Path) -> None:
+    create_directory(tmp_docs, "newdir")
+    assert (tmp_docs / "newdir").is_dir()
+
+
+def test_create_directory_nested(tmp_docs: Path) -> None:
+    create_directory(tmp_docs, "a/b/c")
+    assert (tmp_docs / "a" / "b" / "c").is_dir()
+
+
+def test_create_directory_conflict(tmp_docs: Path) -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        create_directory(tmp_docs, "subdir")
+    assert exc_info.value.status_code == 409
+
+
+def test_delete_directory(tmp_docs: Path) -> None:
+    (tmp_docs / "empty").mkdir()
+    delete_directory(tmp_docs, "empty")
+    assert not (tmp_docs / "empty").exists()
+
+
+def test_delete_directory_not_empty(tmp_docs: Path) -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        delete_directory(tmp_docs, "subdir")
+    assert exc_info.value.status_code == 409
+
+
+def test_delete_directory_not_found(tmp_docs: Path) -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        delete_directory(tmp_docs, "nope")
+    assert exc_info.value.status_code == 404
+
+
+def test_get_tree_shows_empty_dirs(tmp_docs: Path) -> None:
+    (tmp_docs / "emptydir").mkdir()
+    tree = get_tree(tmp_docs)
+    names = {e["name"] for e in tree}
+    assert "emptydir" in names
 
 
 def test_path_traversal(tmp_docs: Path) -> None:

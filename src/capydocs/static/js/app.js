@@ -2,7 +2,7 @@
  * Main application logic for capydocs.
  */
 
-import { renderTree, setActiveFile } from './tree.js';
+import { renderTree, setActiveFile, enableRootDrop } from './tree.js';
 import { loadCodeMirror, createEditor, getContent, wrapSelection, insertAtCursor } from './editor.js';
 import { setupAI } from './ai.js';
 
@@ -27,7 +27,11 @@ async function api(path, options = {}) {
 async function loadTree() {
     const tree = await api('/tree');
     const container = document.getElementById('file-tree');
-    renderTree(container, tree, openFile);
+    renderTree(container, tree, openFile, {
+        onFileDrop: handleFileDrop,
+        onDirAction: handleDirAction,
+    });
+    enableRootDrop(container);
 }
 
 async function openFile(path) {
@@ -117,6 +121,19 @@ async function createFile() {
     });
 }
 
+// --- Create Folder ---
+async function createFolder() {
+    const name = prompt('Folder name:');
+    if (!name) return;
+    try {
+        await api(`/dirs/${name}`, { method: 'POST' });
+        await loadTree();
+        showToast('Folder created');
+    } catch (err) {
+        showToast('Failed to create folder: ' + err.message, 'error');
+    }
+}
+
 // --- Rename/Move ---
 async function renameFile() {
     if (!currentFile) return;
@@ -165,6 +182,64 @@ async function renameFile() {
     });
 }
 
+// --- Drag and Drop ---
+async function handleFileDrop(srcPath, destPath) {
+    if (srcPath === destPath) return;
+    try {
+        const result = await api(`/files/${srcPath}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ destination: destPath }),
+        });
+        await loadTree();
+        if (currentFile === srcPath) {
+            currentFile = result.path;
+            document.getElementById('current-file').textContent = result.path;
+            setActiveFile(document.getElementById('file-tree'), result.path);
+        }
+        showToast('File moved successfully');
+    } catch (err) {
+        showToast('Failed to move: ' + err.message, 'error');
+    }
+}
+
+// --- Directory Actions ---
+async function handleDirAction(action, dirPath) {
+    if (action === 'new-file') {
+        const name = prompt('File name:', 'untitled.md');
+        if (!name) return;
+        try {
+            const path = `${dirPath}/${name}`;
+            await api(`/files/${path}`, {
+                method: 'POST',
+                body: JSON.stringify({ content: '' }),
+            });
+            await loadTree();
+            await openFile(path.endsWith('.md') ? path : path + '.md');
+        } catch (err) {
+            showToast('Failed to create file: ' + err.message, 'error');
+        }
+    } else if (action === 'new-folder') {
+        const name = prompt('Folder name:');
+        if (!name) return;
+        try {
+            await api(`/dirs/${dirPath}/${name}`, { method: 'POST' });
+            await loadTree();
+            showToast('Folder created');
+        } catch (err) {
+            showToast('Failed to create folder: ' + err.message, 'error');
+        }
+    } else if (action === 'delete-folder') {
+        if (!confirm(`Delete folder "${dirPath}"?`)) return;
+        try {
+            await api(`/dirs/${dirPath}`, { method: 'DELETE' });
+            await loadTree();
+            showToast('Folder deleted');
+        } catch (err) {
+            showToast('Failed to delete: ' + err.message, 'error');
+        }
+    }
+}
+
 // --- Delete ---
 async function deleteFile() {
     if (!currentFile) return;
@@ -209,6 +284,7 @@ function setupToolbar() {
     document.getElementById('btn-delete').addEventListener('click', deleteFile);
     document.getElementById('btn-rename').addEventListener('click', renameFile);
     document.getElementById('btn-new').addEventListener('click', createFile);
+    document.getElementById('btn-new-folder').addEventListener('click', createFolder);
 
     document.getElementById('btn-bold').addEventListener('click', () => wrapSelection('**', '**'));
     document.getElementById('btn-italic').addEventListener('click', () => wrapSelection('*', '*'));

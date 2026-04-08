@@ -10,16 +10,16 @@ dev:
 	uv run capydocs --dir ./docs --port 8000 --reload
 
 test:
-	uv run pytest tests/ -v
+	uv run --extra dev pytest tests/ -v
 
 lint:
-	uv run ruff check src/ tests/
+	uv run --extra dev ruff check src/ tests/
 
 format:
-	uv run ruff check --fix src/ tests/
+	uv run --extra dev ruff check --fix src/ tests/
 
 build:
-	uv run python -m build
+	uv run --extra dev python -m build
 
 clean:
 	rm -rf dist/ build/ *.egg-info src/*.egg-info

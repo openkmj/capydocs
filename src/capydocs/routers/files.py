@@ -6,7 +6,9 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from capydocs.services.filesystem import (
+    create_directory,
     create_file,
+    delete_directory,
     delete_file,
     get_tree,
     move_file,
@@ -57,6 +59,20 @@ async def api_move_file(path: str, body: MoveRequest, request: Request) -> dict[
     """Move or rename a markdown file."""
     new_path = move_file(request.app.state.root_dir, path, body.destination)
     return {"path": new_path, "status": "moved"}
+
+
+@router.post("/dirs/{path:path}", status_code=201)
+async def api_create_directory(path: str, request: Request) -> dict[str, str]:
+    """Create a new directory."""
+    create_directory(request.app.state.root_dir, path)
+    return {"path": path, "status": "created"}
+
+
+@router.delete("/dirs/{path:path}")
+async def api_delete_directory(path: str, request: Request) -> dict[str, str]:
+    """Delete an empty directory."""
+    delete_directory(request.app.state.root_dir, path)
+    return {"path": path, "status": "deleted"}
 
 
 @router.delete("/files/{path:path}")
