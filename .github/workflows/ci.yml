@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - run: uv run ruff check src/ tests/
+      - run: uv run --extra dev ruff check src/ tests/
 
   test:
     runs-on: ubuntu-latest
@@ -24,4 +24,4 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv run pytest tests/ -v
+      - run: uv run --extra dev pytest tests/ -v
