@@ -1,0 +1,14 @@
+# Changelog
+
+## 0.1.0 (2026-04-08)
+
+
+### Features
+
+* initial release of capydocs ([6ec0256](https://github.com/openkmj/capydocs/commit/6ec0256fed0b230bf0233e65fac955ba6ce70bbf))
+
+
+### Bug Fixes
+
+* **ci:** use --extra dev for uv run to install test dependencies ([c55dfba](https://github.com/openkmj/capydocs/commit/c55dfba3fafbde707f76195e817bad057b4f1ac8))
+* handle missing openai package gracefully in AI endpoint ([6efbe60](https://github.com/openkmj/capydocs/commit/6efbe6064f24159e948ff6a4f0388651f353def4))
