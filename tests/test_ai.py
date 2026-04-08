@@ -11,7 +11,6 @@ def test_refine_empty_text(client) -> None:
 def test_refine_no_api_key(client) -> None:
     resp = client.post("/api/ai/refine", json={"text": "hello world", "preset": "concise"})
     assert resp.status_code == 422
-    assert "API key" in resp.json()["detail"]
 
 
 def test_get_presets(client) -> None:

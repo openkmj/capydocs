@@ -27,7 +27,7 @@ async def api_refine(body: RefineRequest) -> RefineResponse:
     try:
         result = await refine_text(body.text, body.instruction, body.preset)
         return RefineResponse(**result)
-    except ValueError as e:
+    except (ValueError, ImportError) as e:
         raise HTTPException(status_code=422, detail=str(e)) from None
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"AI service error: {e}") from None
