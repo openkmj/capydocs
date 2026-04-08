@@ -4,12 +4,17 @@ import os
 from typing import Any
 
 PRESETS: dict[str, str] = {
-    "concise": "Make this text more concise while preserving the meaning.",
-    "fix": "Fix grammar, spelling, and punctuation errors. Keep the original tone.",
-    "translate_en": "Translate this text to English. Preserve formatting.",
-    "translate_ko": "Translate this text to Korean. Preserve formatting.",
-    "formal": "Rewrite this text in a more formal, professional tone.",
-    "casual": "Rewrite this text in a more casual, friendly tone.",
+    "compact": (
+        "Summarize and compact this text. Remove unnecessary filler, redundancy, "
+        "and verbose phrasing. Keep only the core information and key points. "
+        "Preserve the original structure (headings, lists) where useful."
+    ),
+    "fix": (
+        "Polish this text. Fix grammar, spelling, punctuation, and awkward phrasing. "
+        "Make it read naturally while keeping the original meaning and tone."
+    ),
+    "translate_en": "Translate this text to English. Preserve markdown formatting.",
+    "translate_ko": "Translate this text to Korean. Preserve markdown formatting.",
 }
 
 MODEL = "gpt-5-mini"

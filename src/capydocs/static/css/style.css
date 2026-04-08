@@ -221,6 +221,32 @@ html, body { height: 100%; font-family: var(--font-sans); background: var(--bg);
 .toast-visible { opacity: 1; transform: translateY(0); }
 .toast-error { background: var(--danger); }
 
+/* AI Dialog */
+.ai-dialog { min-width: 700px; max-width: 90vw; }
+.ai-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.ai-loading { display: none; color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
+.ai-diff {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.ai-diff-pane { min-width: 0; }
+.ai-diff-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+.ai-diff-content {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: var(--font-mono);
+    line-height: 1.5;
+}
+.ai-diff-after { border-color: var(--accent); }
+
 /* Folder action buttons */
 .dir-actions { margin-left: auto; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
 .tree-dir:hover .dir-actions { opacity: 1; }
