@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/openkmj/capydocs/compare/v0.1.0...v0.1.1) (2026-04-08)
+
+
+### Bug Fixes
+
+* **ci:** add --extra dev for build module in release and Makefile ([7646fb5](https://github.com/openkmj/capydocs/commit/7646fb5ed909767fd6a2ef1312760eb72d849ba5))
+
 ## 0.1.0 (2026-04-08)
 
 
