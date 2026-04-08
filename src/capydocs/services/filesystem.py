@@ -1,5 +1,6 @@
 """Filesystem service for markdown file operations."""
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -57,9 +58,30 @@ def read_file(root_dir: Path, relative_path: str) -> str:
     return file_path.read_text(encoding="utf-8")
 
 
+def _normalize_emphasis(text: str) -> str:
+    """Normalize emphasis markers to match Prettier style.
+
+    - ``__text__`` → ``**text**`` (bold uses **)
+    - ``*text*`` → ``_text_`` (italic uses _)
+    Does not touch code blocks or inline code.
+    """
+    # Split by fenced code blocks, process only non-code parts
+    parts = re.split(r"(```[\s\S]*?```|`[^`\n]+`)", text)
+    for i, part in enumerate(parts):
+        if part.startswith("`"):
+            continue
+        # __text__ → **text** (bold normalization, but not inside **)
+        part = re.sub(r"(?<!\*)__(.+?)__(?!\*)", r"**\1**", part)
+        # *text* → _text_ (italic, but not ** which is bold)
+        part = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"_\1_", part)
+        parts[i] = part
+    return "".join(parts)
+
+
 def format_markdown(content: str) -> str:
-    """Format markdown content using mdformat."""
-    return mdformat.text(content, options={"number": True})
+    """Format markdown content using mdformat + Prettier-style emphasis."""
+    formatted = mdformat.text(content, options={"number": True})
+    return _normalize_emphasis(formatted)
 
 
 def write_file(root_dir: Path, relative_path: str, content: str) -> str:
