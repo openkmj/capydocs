@@ -222,7 +222,7 @@ html, body { height: 100%; font-family: var(--font-sans); background: var(--bg);
 .toast-error { background: var(--danger); }
 
 /* AI Dialog */
-.ai-dialog { min-width: 700px; max-width: 90vw; }
+.ai-dialog { width: 700px; max-width: 90vw; }
 .ai-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .ai-loading { display: none; color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
 .ai-diff {
@@ -239,13 +239,20 @@ html, body { height: 100%; font-family: var(--font-sans); background: var(--bg);
     border-radius: 6px;
     padding: 10px;
     font-size: 13px;
-    max-height: 300px;
+    height: 250px;
     overflow-y: auto;
     white-space: pre-wrap;
     font-family: var(--font-mono);
     line-height: 1.5;
 }
-.ai-diff-after { border-color: var(--accent); }
+textarea.ai-diff-after { border-color: var(--accent); resize: none; outline: none; color: var(--text); width: 100%; box-sizing: border-box; }
+.ai-diff-after:focus { border-color: var(--accent-hover); }
+.ai-processing { color: var(--text-muted) !important; font-style: italic; }
+.ai-placeholder { color: var(--text-muted); font-style: italic; font-family: var(--font-sans); display: flex; align-items: center; justify-content: center; height: 100%; }
+.ai-loading-indicator { color: var(--accent); font-style: italic; font-family: var(--font-sans); }
+.ai-loading-indicator::after { content: ''; animation: dots 1.5s infinite; }
+@keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+.ai-error { color: var(--danger); font-family: var(--font-sans); }
 
 /* Folder action buttons */
 .dir-actions { margin-left: auto; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }

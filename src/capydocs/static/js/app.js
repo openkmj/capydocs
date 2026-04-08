@@ -44,15 +44,13 @@ async function openFile(path) {
         const editorContainer = document.getElementById('editor-container');
         createEditor(editorContainer, data.content, () => {
             isDirty = true;
-            updateStatus('unsaved');
         });
 
         document.getElementById('current-file').textContent = path;
         setActiveFile(document.getElementById('file-tree'), path);
-        updateStatus('');
     } catch (err) {
         console.error('Failed to open file:', err);
-        updateStatus('open failed: ' + err.message);
+        showToast('Failed to open: ' + err.message, 'error');
     }
 }
 
@@ -60,7 +58,6 @@ async function openFile(path) {
 async function saveFile() {
     if (!currentFile) return;
     try {
-        updateStatus('saving...', 'pending');
         const result = await api(`/files/${currentFile}`, {
             method: 'PUT',
             body: JSON.stringify({ content: getContent() }),
@@ -69,11 +66,8 @@ async function saveFile() {
             setContent(result.content);
         }
         isDirty = false;
-        updateStatus('✓ Saved', 'success');
         showToast('File saved successfully');
-        setTimeout(() => { if (!isDirty) updateStatus(''); }, 3000);
     } catch (err) {
-        updateStatus('✗ Save failed', 'error');
         showToast('Failed to save: ' + err.message, 'error');
         console.error('Failed to save:', err);
     }
@@ -261,15 +255,6 @@ async function deleteFile() {
 }
 
 // --- Toolbar ---
-function updateStatus(text, type = '') {
-    const el = document.getElementById('save-status');
-    el.textContent = text;
-    el.className = 'save-status';
-    if (type === 'success') el.classList.add('status-success');
-    else if (type === 'error') el.classList.add('status-error');
-    else if (type === 'pending') el.classList.add('status-pending');
-}
-
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;

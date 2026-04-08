@@ -63,9 +63,9 @@ make build      # Build package (dist/)
 make clean      # Remove build artifacts
 ```
 
-## AI Features
+## Capy Groom (AI Features)
 
-AI text refinement uses OpenAI gpt-5-mini. Set your API key in `.env`:
+AI-powered document grooming uses OpenAI gpt-5-mini. Set your API key in `.env`:
 
 ```bash
 OPENAI_API_KEY=sk-...
@@ -73,21 +73,19 @@ OPENAI_API_KEY=sk-...
 
 ### Usage
 1. Open a file in the editor
-2. Select text you want to refine
-3. Click the **AI** button in the toolbar
-4. Choose a preset or type a custom instruction
-5. Preview the result and click **Apply**
+2. Click the **🦫 Groom** button (or select text first for partial refinement)
+3. Choose a preset or type a custom instruction
+4. Review the side-by-side before/after comparison
+5. Edit the result if needed, then click **Apply**
 
 ### Presets
 
 | Preset | Description |
 |--------|-------------|
-| Concise | Make text more concise |
-| Fix grammar | Fix spelling and punctuation |
-| English | Translate to English |
-| Korean | Translate to Korean |
-| Formal | Professional tone |
-| Casual | Friendly tone |
+| 📦 Compact | Summarize and remove unnecessary content |
+| 🔧 Fix | Polish grammar, spelling, and awkward phrasing |
+| 🇺🇸 English | Translate to English |
+| 🇰🇷 Korean | Translate to Korean |
 
 ## Architecture
 

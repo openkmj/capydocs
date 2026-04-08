@@ -23,8 +23,8 @@ export function setupAI() {
     const btn = document.createElement('button');
     btn.id = 'btn-ai';
     btn.className = 'btn btn-sm toolbar-btn';
-    btn.title = 'AI Refine';
-    btn.textContent = '✨ AI';
+    btn.title = 'Capy Groom';
+    btn.textContent = '🦫 Groom';
     btn.addEventListener('click', showAIMenu);
     toolbar.insertBefore(btn, toolbar.querySelector('#btn-save'));
 }
@@ -43,18 +43,17 @@ async function showAIMenu() {
     overlay.className = 'dialog-overlay';
     overlay.innerHTML = `
         <div class="dialog ai-dialog">
-            <h3>✨ AI Refine${isFullDoc ? ' (entire document)' : ''}</h3>
+            <h3>🦫 Capy Groom</h3>
             <div class="ai-presets"></div>
             <input type="text" id="ai-custom-input" placeholder="Or type custom instruction..." />
-            <div id="ai-loading" class="ai-loading">Processing...</div>
-            <div id="ai-diff" class="ai-diff">
+            <div class="ai-diff" style="display:grid">
                 <div class="ai-diff-pane">
                     <div class="ai-diff-label">Before</div>
                     <div class="ai-diff-content" id="ai-before"></div>
                 </div>
                 <div class="ai-diff-pane">
                     <div class="ai-diff-label">After</div>
-                    <div class="ai-diff-content ai-diff-after" id="ai-after"></div>
+                    <textarea class="ai-diff-content ai-diff-after" id="ai-after" placeholder="Select a preset or type an instruction" readonly></textarea>
                 </div>
             </div>
             <div class="dialog-actions">
@@ -67,14 +66,12 @@ async function showAIMenu() {
 
     const presetsDiv = overlay.querySelector('.ai-presets');
     const customInput = overlay.querySelector('#ai-custom-input');
-    const diffDiv = overlay.querySelector('#ai-diff');
     const beforeDiv = overlay.querySelector('#ai-before');
     const afterDiv = overlay.querySelector('#ai-after');
-    const loadingDiv = overlay.querySelector('#ai-loading');
     const sendBtn = overlay.querySelector('#ai-send');
     const applyBtn = overlay.querySelector('#ai-apply');
 
-    let refinedText = '';
+    beforeDiv.textContent = originalText;
 
     for (const [key, label] of Object.entries(PRESET_LABELS)) {
         const btn = document.createElement('button');
@@ -99,8 +96,9 @@ async function showAIMenu() {
     });
 
     async function doRefine(text, instruction, preset) {
-        loadingDiv.style.display = '';
-        diffDiv.style.display = 'none';
+        afterDiv.value = 'Processing...';
+        afterDiv.readOnly = true;
+        afterDiv.classList.add('ai-processing');
         applyBtn.style.display = 'none';
 
         try {
@@ -120,23 +118,22 @@ async function showAIMenu() {
             }
 
             const data = await res.json();
-            refinedText = data.refined;
-            beforeDiv.textContent = originalText;
-            afterDiv.textContent = refinedText;
-            diffDiv.style.display = 'grid';
+            afterDiv.value = data.refined;
+            afterDiv.readOnly = false;
+            afterDiv.classList.remove('ai-processing');
             applyBtn.style.display = '';
         } catch (err) {
-            alert(`AI Error: ${err.message}`);
-        } finally {
-            loadingDiv.style.display = 'none';
+            afterDiv.value = `Error: ${err.message}`;
+            afterDiv.classList.remove('ai-processing');
         }
     }
 
     applyBtn.addEventListener('click', () => {
+        const result = afterDiv.value;
         if (isFullDoc) {
-            setContent(refinedText);
+            setContent(result);
         } else {
-            replaceSelection(sel.from, sel.to, refinedText);
+            replaceSelection(sel.from, sel.to, result);
         }
         overlay.remove();
     });
