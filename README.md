@@ -5,6 +5,8 @@ A lightweight, pip-installable web-based markdown document manager. Point it at 
 ## Features
 
 - **File tree** — Browse `.md` files in a collapsible sidebar tree view
+- **Markdown preview** — Split-view live preview with marked.js
+- **Multi-root directories** — Serve multiple directories via `capydocs.toml` config
 - **CodeMirror 6 editor** — Syntax-highlighted markdown editing
 - **Full CRUD + Move** — Create, read, update, delete, and rename/move markdown files
 - **Folder management** — Create and delete folders from the sidebar (+ Folder button, hover ✕ to delete, right-click context menu)
@@ -31,11 +33,29 @@ pip install -e ".[ai]"
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
-# Serve a directory
-capydocs --dir ./docs
+# Serve current directory
+capydocs
 
 # Open http://localhost:8000 in your browser
 ```
+
+### Multi-Root Configuration
+
+Create a `capydocs.toml` in your working directory to serve multiple directories:
+
+```toml
+port = 8080
+
+[[dirs]]
+name = "notes"
+path = "~/my-notes"
+
+[[dirs]]
+name = "wiki"
+path = "~/work/wiki"
+```
+
+Each directory appears as a top-level folder in the sidebar.
 
 ### CLI Options
 
@@ -43,7 +63,7 @@ capydocs --dir ./docs
 capydocs [OPTIONS]
 
 Options:
-  --dir TEXT      Root directory to serve (default: current directory)
+  --config TEXT   Path to capydocs.toml config file
   --port INTEGER  Port number (default: 8000)
   --host TEXT     Host to bind to (default: 0.0.0.0)
   --reload        Enable auto-reload for development
@@ -115,10 +135,11 @@ capydocs/
 │           ├── editor.js       # CodeMirror 6 wrapper
 │           ├── ai.js           # AI refinement dialog UI
 │           └── cm-bundle.js    # Pre-built CodeMirror bundle
-└── tests/                      # 42 tests (pytest)
+└── tests/                      # 75 tests (pytest)
     ├── conftest.py
     ├── test_filesystem.py
     ├── test_files_api.py
+    ├── test_multi_root.py
     ├── test_search.py
     └── test_ai.py
 ```
