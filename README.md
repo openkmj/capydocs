@@ -27,7 +27,7 @@ A lightweight, pip-installable web-based markdown document manager. Point it at 
 
 ```bash
 # Install
-pip install -e ".[ai]"
+pip install -e "."
 
 # Create a .env file with your OpenAI key (optional, for AI features)
 cp .env.example .env

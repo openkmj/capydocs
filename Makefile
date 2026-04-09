@@ -1,13 +1,13 @@
 .PHONY: install run dev test lint format build clean
 
 install:
-	uv pip install -e ".[dev,ai]"
+	uv pip install -e ".[dev]"
 
 run:
-	uv run capydocs --dir ./docs --port 8000
+	uv run capydocs --port 8000
 
 dev:
-	uv run capydocs --dir ./docs --port 8000 --reload
+	uv run capydocs --port 8000 --reload
 
 test:
 	uv run --extra dev pytest tests/ -v
