@@ -9,6 +9,8 @@ import { setupAI } from './ai.js';
 const API = '/api';
 let currentFile = null;
 let isDirty = false;
+let previewVisible = false;
+let previewTimeout = null;
 
 // --- API helpers ---
 async function api(path, options = {}) {
@@ -44,10 +46,12 @@ async function openFile(path) {
         const editorContainer = document.getElementById('editor-container');
         createEditor(editorContainer, data.content, () => {
             isDirty = true;
+            if (previewVisible) updatePreview();
         });
 
         document.getElementById('current-file').textContent = path;
         setActiveFile(document.getElementById('file-tree'), path);
+        if (previewVisible) updatePreview();
     } catch (err) {
         console.error('Failed to open file:', err);
         showToast('Failed to open: ' + err.message, 'error');
@@ -254,6 +258,33 @@ async function deleteFile() {
     }
 }
 
+// --- Preview ---
+function togglePreview() {
+    const wrapper = document.querySelector('.editor-wrapper');
+    const btn = document.getElementById('btn-preview');
+    previewVisible = !previewVisible;
+
+    if (previewVisible) {
+        wrapper.classList.add('split');
+        btn.classList.add('btn-primary');
+        updatePreview();
+    } else {
+        wrapper.classList.remove('split');
+        btn.classList.remove('btn-primary');
+    }
+}
+
+function updatePreview() {
+    clearTimeout(previewTimeout);
+    previewTimeout = setTimeout(() => {
+        const container = document.getElementById('preview-container');
+        const content = getContent();
+        if (typeof marked !== 'undefined') {
+            container.innerHTML = marked.parse(content);
+        }
+    }, 150);
+}
+
 // --- Toolbar ---
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
@@ -271,6 +302,7 @@ function setupToolbar() {
     document.getElementById('btn-save').addEventListener('click', saveFile);
     document.getElementById('btn-delete').addEventListener('click', deleteFile);
     document.getElementById('btn-rename').addEventListener('click', renameFile);
+    document.getElementById('btn-preview').addEventListener('click', togglePreview);
     document.getElementById('btn-new').addEventListener('click', createFile);
     document.getElementById('btn-new-folder').addEventListener('click', createFolder);
 

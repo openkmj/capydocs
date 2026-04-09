@@ -7,6 +7,8 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="stylesheet" href="/css/style.css">
+    <!-- Markdown preview -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- CodeMirror 6 via CDN -->
     <script type="module" src="/js/app.js"></script>
 </head>
@@ -32,14 +34,18 @@
                     <span id="btn-rename" class="toolbar-icon" title="Rename">✏️</span>
                 </div>
                 <div class="toolbar-right">
+                    <button id="btn-preview" class="btn btn-sm" title="Toggle preview">Preview</button>
                     <button id="btn-save" class="btn btn-primary btn-sm" title="Save (Ctrl+S)">Save</button>
                     <button id="btn-delete" class="btn btn-danger btn-sm" title="Delete file">Delete</button>
                 </div>
             </div>
-            <div id="editor-container" class="editor-container">
-                <div id="editor-placeholder" class="editor-placeholder">
-                    Select a file from the sidebar to start editing
+            <div class="editor-wrapper">
+                <div id="editor-container" class="editor-container">
+                    <div id="editor-placeholder" class="editor-placeholder">
+                        Select a file from the sidebar to start editing
+                    </div>
                 </div>
+                <div id="preview-container" class="preview-container"></div>
             </div>
         </main>
     </div>
