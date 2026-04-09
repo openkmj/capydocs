@@ -115,6 +115,75 @@ class TestGetMultiTree:
         assert names == sorted(names)
 
 
+# --- get_multi_tree sub-path filtering ---
+
+
+class TestGetMultiTreeSubPath:
+    def test_single_root_sub_path(self, tmp_docs: Path) -> None:
+        root_dirs = {"": tmp_docs}
+        tree = get_multi_tree(root_dirs, sub_path="subdir")
+        names = {e["name"] for e in tree}
+        assert "nested.md" in names
+
+    def test_single_root_sub_path_has_correct_paths(self, tmp_docs: Path) -> None:
+        root_dirs = {"": tmp_docs}
+        tree = get_multi_tree(root_dirs, sub_path="subdir")
+        paths = {e["path"] for e in tree}
+        assert "subdir/nested.md" in paths
+
+    def test_multi_root_sub_path(self, tmp_multi_docs: dict[str, Path]) -> None:
+        tree = get_multi_tree(tmp_multi_docs, sub_path="notes/archive")
+        names = {e["name"] for e in tree}
+        assert "old.md" in names
+
+    def test_multi_root_sub_path_has_prefixed_paths(
+        self, tmp_multi_docs: dict[str, Path]
+    ) -> None:
+        tree = get_multi_tree(tmp_multi_docs, sub_path="notes/archive")
+        paths = {e["path"] for e in tree}
+        assert "notes/archive/old.md" in paths
+
+    def test_multi_root_sub_path_root_level(self, tmp_multi_docs: dict[str, Path]) -> None:
+        """Listing a root name returns its direct contents."""
+        tree = get_multi_tree(tmp_multi_docs, sub_path="wiki")
+        names = {e["name"] for e in tree}
+        assert "setup.md" in names
+
+    def test_sub_path_nonexistent_raises(self, tmp_multi_docs: dict[str, Path]) -> None:
+        with pytest.raises(HTTPException) as exc_info:
+            get_multi_tree(tmp_multi_docs, sub_path="notes/nonexistent")
+        assert exc_info.value.status_code == 404
+
+    def test_no_sub_path_returns_full_tree(self, tmp_multi_docs: dict[str, Path]) -> None:
+        tree = get_multi_tree(tmp_multi_docs, sub_path=None)
+        root_names = {e["name"] for e in tree}
+        assert root_names == {"notes", "wiki"}
+
+
+class TestSubPathAPI:
+    def test_tree_with_sub_path(self, client) -> None:
+        resp = client.get("/api/tree?path=subdir")
+        assert resp.status_code == 200
+        names = {e["name"] for e in resp.json()}
+        assert "nested.md" in names
+
+    def test_tree_without_sub_path(self, client) -> None:
+        resp = client.get("/api/tree")
+        assert resp.status_code == 200
+        names = {e["name"] for e in resp.json()}
+        assert "hello.md" in names
+
+    def test_multi_tree_with_sub_path(self, multi_client) -> None:
+        resp = multi_client.get("/api/tree?path=notes/archive")
+        assert resp.status_code == 200
+        names = {e["name"] for e in resp.json()}
+        assert "old.md" in names
+
+    def test_multi_tree_sub_path_not_found(self, multi_client) -> None:
+        resp = multi_client.get("/api/tree?path=notes/nonexistent")
+        assert resp.status_code == 404
+
+
 # --- search_files_multi ---
 
 
