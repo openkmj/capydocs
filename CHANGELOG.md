@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/openkmj/capydocs/compare/v0.4.0...v0.5.0) (2026-04-09)
+
+
+### Features
+
+* support multi-root directories via capydocs.toml config ([bc0b6e7](https://github.com/openkmj/capydocs/commit/bc0b6e7b28dd2d5419530e078ab3e6a56f6653d4))
+
+
+### Documentation
+
+* update README with multi-root config and markdown preview ([7b3b835](https://github.com/openkmj/capydocs/commit/7b3b835a8062d1bd9a04d1d25d01b250734f9130))
+
 ## [0.4.0](https://github.com/openkmj/capydocs/compare/v0.3.0...v0.4.0) (2026-04-09)
 
 
