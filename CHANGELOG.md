@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0](https://github.com/openkmj/capydocs/compare/v0.2.0...v0.3.0) (2026-04-09)
+
+
+### Features
+
+* auto-format markdown on save using mdformat ([2dcb07d](https://github.com/openkmj/capydocs/commit/2dcb07dd40603132ec7a4d6f2cdf689eebff3491))
+* clean up toolbar and add inline rename ([7236a91](https://github.com/openkmj/capydocs/commit/7236a9171a121b27b358cf03aadcad0dc1ced74c))
+* normalize emphasis markers to match Prettier style ([9334b6c](https://github.com/openkmj/capydocs/commit/9334b6c9dd5c031b6f9c0c9ba60757c154497840))
+* rebrand AI to Capy Groom with improved UI ([e6c2a35](https://github.com/openkmj/capydocs/commit/e6c2a35d8695296fbcf1c2b5c53357a0cd242e63))
+* revamp AI refine with compact preset and side-by-side diff UI ([e665eb6](https://github.com/openkmj/capydocs/commit/e665eb6cd6aa8ddc87bed4dac8ae7e09be2f4547))
+
+
+### Bug Fixes
+
+* preserve ordered list numbering in mdformat ([01cd78b](https://github.com/openkmj/capydocs/commit/01cd78b1c34a4e817db6bb63bbe6bfcb3f9bc7ae))
+
 ## [0.2.0](https://github.com/openkmj/capydocs/compare/v0.1.1...v0.2.0) (2026-04-08)
 
 
