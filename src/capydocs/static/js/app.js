@@ -3,7 +3,7 @@
  */
 
 import { renderTree, setActiveFile, enableRootDrop } from './tree.js';
-import { loadCodeMirror, createEditor, getContent, setContent, wrapSelection, insertAtCursor } from './editor.js';
+import { loadCodeMirror, createEditor, getContent, setContent } from './editor.js';
 import { setupAI } from './ai.js';
 
 const API = '/api';
@@ -131,52 +131,55 @@ async function createFolder() {
     }
 }
 
-// --- Rename/Move ---
-async function renameFile() {
+// --- Rename/Move (inline edit) ---
+function renameFile() {
     if (!currentFile) return;
-    const overlay = document.createElement('div');
-    overlay.className = 'dialog-overlay';
-    overlay.innerHTML = `
-        <div class="dialog">
-            <h3>Rename / Move File</h3>
-            <input type="text" id="rename-file-input" value="${esc(currentFile)}" autofocus />
-            <div class="dialog-actions">
-                <button class="btn btn-sm" id="dialog-cancel">Cancel</button>
-                <button class="btn btn-primary btn-sm" id="dialog-rename">Rename</button>
-            </div>
-        </div>`;
-    document.body.appendChild(overlay);
+    const fileSpan = document.getElementById('current-file');
+    const original = fileSpan.textContent;
 
-    const input = overlay.querySelector('#rename-file-input');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = original;
+    input.className = 'inline-rename';
+    fileSpan.replaceWith(input);
     input.focus();
     input.select();
 
-    return new Promise((resolve) => {
-        const close = () => { overlay.remove(); resolve(); };
+    let done = false;
+    const finish = async (save) => {
+        if (done) return;
+        done = true;
+        const dest = input.value.trim();
+        const span = document.createElement('span');
+        span.id = 'current-file';
+        span.className = 'current-file';
 
-        overlay.querySelector('#dialog-cancel').addEventListener('click', close);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-
-        const doRename = async () => {
-            const dest = input.value.trim();
-            if (!dest || dest === currentFile) { close(); return; }
+        if (save && dest && dest !== original) {
             try {
-                const result = await api(`/files/${currentFile}`, {
+                const result = await api(`/files/${original}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ destination: dest }),
                 });
+                span.textContent = result.path;
+                currentFile = result.path;
                 await loadTree();
-                await openFile(result.path);
-                showToast('File renamed successfully');
+                setActiveFile(document.getElementById('file-tree'), result.path);
+                showToast('File renamed');
             } catch (err) {
+                span.textContent = original;
                 showToast('Failed to rename: ' + err.message, 'error');
             }
-            close();
-        };
+        } else {
+            span.textContent = original;
+        }
+        input.replaceWith(span);
+    };
 
-        overlay.querySelector('#dialog-rename').addEventListener('click', doRename);
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doRename(); });
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+        if (e.key === 'Escape') finish(false);
     });
+    input.addEventListener('blur', () => finish(false));
 }
 
 // --- Drag and Drop ---
@@ -273,12 +276,6 @@ function setupToolbar() {
     document.getElementById('btn-rename').addEventListener('click', renameFile);
     document.getElementById('btn-new').addEventListener('click', createFile);
     document.getElementById('btn-new-folder').addEventListener('click', createFolder);
-
-    document.getElementById('btn-bold').addEventListener('click', () => wrapSelection('**', '**'));
-    document.getElementById('btn-italic').addEventListener('click', () => wrapSelection('*', '*'));
-    document.getElementById('btn-heading').addEventListener('click', () => insertAtCursor('## '));
-    document.getElementById('btn-link').addEventListener('click', () => wrapSelection('[', '](url)'));
-    document.getElementById('btn-list').addEventListener('click', () => insertAtCursor('- '));
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
