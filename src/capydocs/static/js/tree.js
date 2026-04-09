@@ -28,8 +28,10 @@ function buildNodes(parent, items) {
             dirItem.innerHTML = `<span class="icon">📂</span><span class="name">${esc(item.name)}</span><span class="dir-actions"><span class="dir-btn dir-btn-delete" title="Delete folder">✕</span></span>`;
 
             const children = document.createElement('div');
-            children.className = 'tree-children';
+            children.className = 'tree-children collapsed';
             buildNodes(children, item.children || []);
+
+            dirItem.querySelector('.icon').textContent = '📁';
 
             dirItem.addEventListener('click', (e) => {
                 if (e.target.closest('.dir-btn')) return;
