@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/openkmj/capydocs/compare/v0.5.0...v0.6.0) (2026-04-09)
+
+
+### Features
+
+* add sub-path filtering to tree API and MCP list_docs ([1f672b4](https://github.com/openkmj/capydocs/commit/1f672b41317374886f0900817092c31fc7b46afc))
+
 ## [0.5.0](https://github.com/openkmj/capydocs/compare/v0.4.0...v0.5.0) (2026-04-09)
 
 
