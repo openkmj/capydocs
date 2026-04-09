@@ -5,7 +5,7 @@ A lightweight, pip-installable web-based markdown document manager. Point it at 
 ## Features
 
 - **File tree** — Browse `.md` files in a collapsible sidebar tree view
-- **CodeMirror 6 editor** — Syntax-highlighted markdown editing with formatting toolbar (bold, italic, heading, link, list)
+- **CodeMirror 6 editor** — Syntax-highlighted markdown editing
 - **Full CRUD + Move** — Create, read, update, delete, and rename/move markdown files
 - **Folder management** — Create and delete folders from the sidebar (+ Folder button, hover ✕ to delete, right-click context menu)
 - **Drag and drop** — Move files between folders by dragging in the sidebar tree

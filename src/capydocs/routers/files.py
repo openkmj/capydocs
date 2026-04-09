@@ -43,8 +43,8 @@ async def api_read_file(path: str, request: Request) -> dict[str, str]:
 @router.put("/files/{path:path}")
 async def api_write_file(path: str, body: FileContent, request: Request) -> dict[str, str]:
     """Update a markdown file."""
-    formatted = write_file(request.app.state.root_dir, path, body.content)
-    return {"path": path, "status": "saved", "content": formatted}
+    write_file(request.app.state.root_dir, path, body.content)
+    return {"path": path, "status": "saved"}
 
 
 @router.post("/files/{path:path}", status_code=201)

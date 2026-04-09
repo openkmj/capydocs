@@ -19,7 +19,7 @@ def test_write_file(client) -> None:
     resp = client.put("/api/files/hello.md", json={"content": "# Updated"})
     assert resp.status_code == 200
     resp2 = client.get("/api/files/hello.md")
-    assert resp2.json()["content"] == "# Updated\n"
+    assert resp2.json()["content"] == "# Updated"
 
 
 def test_create_file(client) -> None:
