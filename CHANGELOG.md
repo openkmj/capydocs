@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/openkmj/capydocs/compare/v0.3.0...v0.4.0) (2026-04-09)
+
+
+### Features
+
+* add capybara favicon and apple-touch-icon ([6b7c1d8](https://github.com/openkmj/capydocs/commit/6b7c1d899db13a1cf5d0bda2566f31eb57cad819))
+* add markdown preview split view with marked.js ([f966dde](https://github.com/openkmj/capydocs/commit/f966dde5d016a8d31c147d8eb0d3aa6662722910))
+* collapse folder tree nodes by default ([d4af9ea](https://github.com/openkmj/capydocs/commit/d4af9ea7c59f22e8b4a83bc7ac9369da6aa11a3b))
+
+
+### Bug Fixes
+
+* remove mdformat auto-formatting on save ([f0d42fa](https://github.com/openkmj/capydocs/commit/f0d42fa973aa0d4e75bc42c4cea3828f241e4f2e))
+
 ## [0.3.0](https://github.com/openkmj/capydocs/compare/v0.2.0...v0.3.0) (2026-04-09)
 
 
