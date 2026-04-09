@@ -28,13 +28,16 @@ def set_root_dirs(root_dirs: dict[str, Path]) -> None:
 
 
 @mcp.tool()
-def list_docs() -> list[dict[str, Any]]:
-    """List all markdown files as a tree structure.
+def list_docs(path: str | None = None) -> list[dict[str, Any]]:
+    """List markdown files as a tree structure.
 
     Returns a recursive tree of .md files under the configured root directories.
     Each entry has: name, path (relative), type ("file" or "directory"), and children (for directories).
+
+    Args:
+        path: Optional sub-path to list only a specific folder (e.g. "notes/archive")
     """
-    return get_multi_tree(_root_dirs)
+    return get_multi_tree(_root_dirs, sub_path=path)
 
 
 @mcp.tool()

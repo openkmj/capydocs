@@ -29,9 +29,9 @@ class MoveRequest(BaseModel):
 
 
 @router.get("/tree")
-async def api_get_tree(request: Request) -> list[dict[str, Any]]:
-    """Get the markdown file tree."""
-    return get_multi_tree(request.app.state.root_dirs)
+async def api_get_tree(request: Request, path: str | None = None) -> list[dict[str, Any]]:
+    """Get the markdown file tree. Optionally filter by sub-path."""
+    return get_multi_tree(request.app.state.root_dirs, sub_path=path)
 
 
 @router.get("/files/{path:path}")

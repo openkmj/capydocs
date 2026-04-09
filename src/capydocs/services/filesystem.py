@@ -67,8 +67,27 @@ def get_tree(root_dir: Path) -> list[dict[str, Any]]:
     return _build_tree(root_dir)
 
 
-def get_multi_tree(root_dirs: dict[str, Path]) -> list[dict[str, Any]]:
-    """Get a merged tree from multiple root directories."""
+def get_multi_tree(
+    root_dirs: dict[str, Path], sub_path: str | None = None
+) -> list[dict[str, Any]]:
+    """Get a merged tree from multiple root directories.
+
+    If sub_path is given, return only the subtree at that path.
+    """
+    if sub_path:
+        root_dir, rel_path = resolve_root(root_dirs, sub_path)
+        target = _validate_path(root_dir, rel_path) if rel_path else root_dir
+        if not target.is_dir():
+            raise HTTPException(status_code=404, detail=f"Directory not found: {sub_path}")
+        subtree = get_tree(target)
+        # Fix paths to be relative to root_dir, then prefix if multi-root
+        for item in subtree:
+            _rebase_paths(item, rel_path)
+        if "" not in root_dirs:
+            root_name = sub_path.split("/", 1)[0]
+            _prefix_paths(subtree, root_name)
+        return subtree
+
     if "" in root_dirs:
         return get_tree(root_dirs[""])
 
@@ -83,6 +102,15 @@ def get_multi_tree(root_dirs: dict[str, Path]) -> list[dict[str, Any]]:
             "children": children,
         })
     return result
+
+
+def _rebase_paths(item: dict[str, Any], parent: str) -> None:
+    """Rebase item paths to include the parent directory."""
+    if parent:
+        item["path"] = f"{parent}/{item['path']}"
+    if "children" in item:
+        for child in item["children"]:
+            _rebase_paths(child, parent)
 
 
 def _prefix_paths(items: list[dict[str, Any]], prefix: str) -> None:
