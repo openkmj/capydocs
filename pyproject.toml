@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "capydocs"
-version = "0.3.0"
+version = "0.4.0"
 description = "A lightweight web-based markdown document manager for your repository"
 readme = "README.md"
 license = "MIT"
