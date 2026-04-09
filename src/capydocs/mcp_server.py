@@ -8,32 +8,33 @@ from fastmcp import FastMCP
 from capydocs.services.filesystem import (
     create_file,
     delete_file,
-    get_tree,
+    get_multi_tree,
     move_file,
     read_file,
+    resolve_root,
     write_file,
 )
-from capydocs.services.search import search_files
+from capydocs.services.search import search_files_multi
 
 mcp = FastMCP("capydocs")
 
 # Will be set when the MCP server is mounted
-_root_dir: Path = Path(".")
+_root_dirs: dict[str, Path] = {"": Path(".")}
 
 
-def set_root_dir(root_dir: Path) -> None:
-    global _root_dir
-    _root_dir = root_dir
+def set_root_dirs(root_dirs: dict[str, Path]) -> None:
+    global _root_dirs
+    _root_dirs = root_dirs
 
 
 @mcp.tool()
 def list_docs() -> list[dict[str, Any]]:
     """List all markdown files as a tree structure.
 
-    Returns a recursive tree of .md files under the configured root directory.
+    Returns a recursive tree of .md files under the configured root directories.
     Each entry has: name, path (relative), type ("file" or "directory"), and children (for directories).
     """
-    return get_tree(_root_dir)
+    return get_multi_tree(_root_dirs)
 
 
 @mcp.tool()
@@ -43,7 +44,8 @@ def read_doc(path: str) -> str:
     Args:
         path: Relative path to the markdown file (e.g. "guides/setup.md")
     """
-    return read_file(_root_dir, path)
+    root_dir, rel_path = resolve_root(_root_dirs, path)
+    return read_file(root_dir, rel_path)
 
 
 @mcp.tool()
@@ -57,10 +59,11 @@ def write_doc(path: str, content: str) -> str:
         path: Relative path to the markdown file (e.g. "notes/meeting.md")
         content: The markdown content to write
     """
+    root_dir, rel_path = resolve_root(_root_dirs, path)
     try:
-        write_file(_root_dir, path, content)
+        write_file(root_dir, rel_path, content)
     except Exception:
-        create_file(_root_dir, path, content)
+        create_file(root_dir, rel_path, content)
     return f"Written: {path}"
 
 
@@ -71,7 +74,8 @@ def delete_doc(path: str) -> str:
     Args:
         path: Relative path to the markdown file to delete
     """
-    delete_file(_root_dir, path)
+    root_dir, rel_path = resolve_root(_root_dirs, path)
+    delete_file(root_dir, rel_path)
     return f"Deleted: {path}"
 
 
@@ -83,7 +87,9 @@ def move_doc(path: str, destination: str) -> str:
         path: Current relative path of the file (e.g. "notes/old-name.md")
         destination: New relative path for the file (e.g. "notes/new-name.md")
     """
-    new_path = move_file(_root_dir, path, destination)
+    root_dir, rel_path = resolve_root(_root_dirs, path)
+    _, dest_rel = resolve_root(_root_dirs, destination)
+    new_path = move_file(root_dir, rel_path, dest_rel)
     return f"Moved: {path} -> {new_path}"
 
 
@@ -96,4 +102,4 @@ def search_docs(query: str) -> list[dict[str, Any]]:
     Args:
         query: Search term to look for in filenames and file content
     """
-    return search_files(_root_dir, query)
+    return search_files_multi(_root_dirs, query)

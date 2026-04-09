@@ -5,7 +5,7 @@ from typing import Any
 
 
 def search_files(root_dir: Path, query: str, max_results: int = 50) -> list[dict[str, Any]]:
-    """Search markdown files by filename and content."""
+    """Search markdown files by filename and content within a single root."""
     if not query.strip():
         return []
 
@@ -59,3 +59,23 @@ def search_files(root_dir: Path, query: str, max_results: int = 50) -> list[dict
     # Sort: name matches first, then content matches
     results.sort(key=lambda r: (not r["name_match"], r["path"]))
     return results
+
+
+def search_files_multi(
+    root_dirs: dict[str, Path], query: str, max_results: int = 50
+) -> list[dict[str, Any]]:
+    """Search markdown files across multiple root directories."""
+    if "" in root_dirs:
+        return search_files(root_dirs[""], query, max_results)
+
+    all_results: list[dict[str, Any]] = []
+    for name, root_dir in sorted(root_dirs.items()):
+        results = search_files(root_dir, query, max_results - len(all_results))
+        for r in results:
+            r["path"] = f"{name}/{r['path']}"
+        all_results.extend(results)
+        if len(all_results) >= max_results:
+            break
+
+    all_results.sort(key=lambda r: (not r["name_match"], r["path"]))
+    return all_results
