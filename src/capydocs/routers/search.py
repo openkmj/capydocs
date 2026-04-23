@@ -10,6 +10,11 @@ router = APIRouter(tags=["search"])
 
 
 @router.get("/search")
-async def api_search(q: str, request: Request) -> list[dict[str, Any]]:
-    """Search markdown files by filename and content."""
-    return search_files_multi(request.app.state.root_dirs, q)
+async def api_search(
+    q: str, request: Request, path: str | None = None
+) -> list[dict[str, Any]]:
+    """Search markdown files by filename and content.
+
+    Optionally restrict search to a sub-path (e.g. ?path=notes/archive).
+    """
+    return search_files_multi(request.app.state.root_dirs, q, path=path)

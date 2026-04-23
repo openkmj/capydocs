@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import Any
 
+from capydocs.services.filesystem import resolve_root
+
 
 def search_files(root_dir: Path, query: str, max_results: int = 50) -> list[dict[str, Any]]:
     """Search markdown files by filename and content within a single root."""
@@ -62,9 +64,26 @@ def search_files(root_dir: Path, query: str, max_results: int = 50) -> list[dict
 
 
 def search_files_multi(
-    root_dirs: dict[str, Path], query: str, max_results: int = 50
+    root_dirs: dict[str, Path],
+    query: str,
+    max_results: int = 50,
+    path: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Search markdown files across multiple root directories."""
+    """Search markdown files across multiple root directories.
+
+    If *path* is given, only search within that sub-path (e.g. "notes/archive").
+    """
+    if path:
+        root_dir, rel_path = resolve_root(root_dirs, path)
+        target = (root_dir / rel_path).resolve() if rel_path else root_dir
+        if not target.is_dir():
+            return []
+        results = search_files(target, query, max_results)
+        # Prefix result paths so they're relative to the overall root
+        for r in results:
+            r["path"] = f"{path}/{r['path']}"
+        return results
+
     if "" in root_dirs:
         return search_files(root_dirs[""], query, max_results)
 

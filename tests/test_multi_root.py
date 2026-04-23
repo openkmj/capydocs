@@ -224,6 +224,79 @@ class TestSearchFilesMulti:
         assert len(results) <= 2
 
 
+# --- search_files_multi with path filtering ---
+
+
+class TestSearchFilesMultiPath:
+    def test_single_root_search_in_subdir(self, tmp_docs: Path) -> None:
+        root_dirs = {"": tmp_docs}
+        results = search_files_multi(root_dirs, "nested", path="subdir")
+        assert len(results) == 1
+        assert results[0]["path"] == "subdir/nested.md"
+
+    def test_single_root_search_excludes_outside(self, tmp_docs: Path) -> None:
+        """Searching in subdir should not find files in the root."""
+        root_dirs = {"": tmp_docs}
+        results = search_files_multi(root_dirs, "Hello", path="subdir")
+        assert len(results) == 0
+
+    def test_multi_root_search_in_root_name(self, tmp_multi_docs: dict[str, Path]) -> None:
+        results = search_files_multi(tmp_multi_docs, "Todo", path="notes")
+        assert len(results) >= 1
+        assert any(r["path"] == "notes/todo.md" for r in results)
+
+    def test_multi_root_search_in_nested_dir(self, tmp_multi_docs: dict[str, Path]) -> None:
+        results = search_files_multi(tmp_multi_docs, "Old", path="notes/archive")
+        assert len(results) == 1
+        assert results[0]["path"] == "notes/archive/old.md"
+
+    def test_multi_root_search_path_excludes_other_roots(
+        self, tmp_multi_docs: dict[str, Path]
+    ) -> None:
+        """Searching in 'notes' should not find wiki files."""
+        results = search_files_multi(tmp_multi_docs, "Setup", path="notes")
+        assert len(results) == 0
+
+    def test_search_nonexistent_path_returns_empty(
+        self, tmp_multi_docs: dict[str, Path]
+    ) -> None:
+        results = search_files_multi(tmp_multi_docs, "anything", path="notes/nonexistent")
+        assert results == []
+
+    def test_no_path_returns_all(self, tmp_multi_docs: dict[str, Path]) -> None:
+        results = search_files_multi(tmp_multi_docs, "#", path=None)
+        roots_found = {r["path"].split("/")[0] for r in results}
+        assert "notes" in roots_found
+        assert "wiki" in roots_found
+
+
+class TestSearchPathAPI:
+    def test_search_with_path(self, multi_client) -> None:
+        resp = multi_client.get("/api/search?q=Todo&path=notes")
+        assert resp.status_code == 200
+        results = resp.json()
+        assert any(r["path"] == "notes/todo.md" for r in results)
+
+    def test_search_with_path_excludes_other(self, multi_client) -> None:
+        resp = multi_client.get("/api/search?q=Setup&path=notes")
+        assert resp.status_code == 200
+        assert len(resp.json()) == 0
+
+    def test_search_without_path_finds_all(self, multi_client) -> None:
+        resp = multi_client.get("/api/search?q=%23")
+        assert resp.status_code == 200
+        roots = {r["path"].split("/")[0] for r in resp.json()}
+        assert "notes" in roots
+        assert "wiki" in roots
+
+    def test_single_root_search_with_path(self, client) -> None:
+        resp = client.get("/api/search?q=nested&path=subdir")
+        assert resp.status_code == 200
+        results = resp.json()
+        assert len(results) == 1
+        assert results[0]["path"] == "subdir/nested.md"
+
+
 # --- Multi-root API tests ---
 
 

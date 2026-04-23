@@ -97,12 +97,13 @@ def move_doc(path: str, destination: str) -> str:
 
 
 @mcp.tool()
-def search_docs(query: str) -> list[dict[str, Any]]:
+def search_docs(query: str, path: str | None = None) -> list[dict[str, Any]]:
     """Search markdown files by filename and content.
 
     Returns matching files with context snippets showing where the match was found.
 
     Args:
         query: Search term to look for in filenames and file content
+        path: Optional folder path to restrict the search scope (e.g. "notes/archive")
     """
-    return search_files_multi(_root_dirs, query)
+    return search_files_multi(_root_dirs, query, path=path)
