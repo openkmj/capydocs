@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/openkmj/capydocs/compare/v0.6.0...v0.7.0) (2026-05-07)
+
+
+### Features
+
+* add sub-path filtering to search API and MCP search_docs ([56e1cd3](https://github.com/openkmj/capydocs/commit/56e1cd32f60f924133682b304d8a487cbf17614e))
+* add URL hash routing for direct file access ([95b3406](https://github.com/openkmj/capydocs/commit/95b34067f8785d3b81e57ed80cbc7a2bcd009142))
+
 ## [0.6.0](https://github.com/openkmj/capydocs/compare/v0.5.0...v0.6.0) (2026-04-09)
 
 
