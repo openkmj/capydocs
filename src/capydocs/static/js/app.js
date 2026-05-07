@@ -51,11 +51,36 @@ async function openFile(path) {
 
         document.getElementById('current-file').textContent = path;
         setActiveFile(document.getElementById('file-tree'), path);
+        syncUrlHash(path, 'push');
         if (previewVisible) updatePreview();
     } catch (err) {
         console.error('Failed to open file:', err);
-        showToast('Failed to open: ' + err.message, 'error');
+        currentFile = null;
+        isDirty = false;
+        document.getElementById('current-file').textContent = 'No file selected';
+        setActiveFile(document.getElementById('file-tree'), '');
+        document.getElementById('editor-container').innerHTML =
+            `<div class="editor-placeholder">File not found: ${esc(path)}</div>`;
     }
+}
+
+// --- URL hash sync ---
+function pathFromHash() {
+    const raw = location.hash.slice(1);
+    if (!raw) return null;
+    try {
+        return decodeURI(raw);
+    } catch {
+        return null;
+    }
+}
+
+function syncUrlHash(path, mode = 'replace') {
+    const newHash = path ? '#' + encodeURI(path) : '';
+    const target = newHash || location.pathname + location.search;
+    if (path && location.hash === newHash) return;
+    if (mode === 'push') history.pushState(null, '', target);
+    else history.replaceState(null, '', target);
 }
 
 // --- Save ---
@@ -165,6 +190,7 @@ function renameFile() {
                 currentFile = result.path;
                 await loadTree();
                 setActiveFile(document.getElementById('file-tree'), result.path);
+                syncUrlHash(result.path);
                 showToast('File renamed');
             } catch (err) {
                 span.textContent = original;
@@ -196,6 +222,7 @@ async function handleFileDrop(srcPath, destPath) {
             currentFile = result.path;
             document.getElementById('current-file').textContent = result.path;
             setActiveFile(document.getElementById('file-tree'), result.path);
+            syncUrlHash(result.path);
         }
         showToast('File moved successfully');
     } catch (err) {
@@ -252,6 +279,7 @@ async function deleteFile() {
         document.getElementById('current-file').textContent = 'No file selected';
         document.getElementById('editor-container').innerHTML =
             '<div id="editor-placeholder" class="editor-placeholder">Select a file from the sidebar to start editing</div>';
+        syncUrlHash(null);
         await loadTree();
     } catch (err) {
         console.error('Failed to delete:', err);
@@ -373,6 +401,14 @@ async function init() {
     await loadTree();
     setupToolbar();
     setupSearch();
+
+    window.addEventListener('hashchange', () => {
+        const path = pathFromHash();
+        if (path && path !== currentFile) openFile(path);
+    });
+
+    const initialPath = pathFromHash();
+    if (initialPath) openFile(initialPath);
 
     // Load CodeMirror in parallel — don't block UI if CDN is slow
     loadCodeMirror()
